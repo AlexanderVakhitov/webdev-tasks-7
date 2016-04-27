@@ -1,0 +1,22 @@
+extends layout
+
+block content
+    div.container
+        input#volume.volume(
+            type='range'
+            min='0'
+            max='1'
+            step='0.1'
+            name='volume'
+            value='1'
+        )
+        div#message.message Привет, я Хрюндель!
+        svg#hrundel.hrundel
+            defs
+        div#buttons.buttons
+            button.add-satiety Добавить сытость
+            button.add-energy Добавить энергию
+            button.add-mood Добавить настроение
+        button.new-game Новая игра
+    script(src='/javascripts/snap.svg.js')
+    script(src='/javascripts/index.js')
