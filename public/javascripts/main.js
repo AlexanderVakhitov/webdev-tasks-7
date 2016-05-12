@@ -34,7 +34,12 @@ require(['models/Hrundel', 'models/HrundelSvg', 'models/HrundelBar'], function (
         hrundelVoice();
 
         setInterval(function () {
-            Hrundel.isAlive() ? HrundelSvg.alive() : HrundelSvg.dead();
+            if (Hrundel.isAlive()) {
+                HrundelSvg.alive();
+            } else {
+                HrundelSvg.dead();
+                hrundelMsg.innerHTML = 'Хрюндель умер!';
+            }
             HrundelBar.update(Hrundel.getInstance());
         }, updateTimeout);
     }
@@ -54,6 +59,10 @@ require(['models/Hrundel', 'models/HrundelSvg', 'models/HrundelBar'], function (
         }
 
         document.addEventListener(visibilityChange, function() {
+            if (!Hrundel.isAlive()) {
+                return;
+            }
+
             if (document[hidden]) {
                 hrundelMsg.innerHTML = 'Хрюндель уснул...';
                 Hrundel.setStatus('sleep');
@@ -69,6 +78,10 @@ require(['models/Hrundel', 'models/HrundelSvg', 'models/HrundelBar'], function (
     function lightInstance() {
         if ('ondevicelight' in window) {
             window.ondevicelight = function(event) {
+                if (!Hrundel.isAlive()) {
+                    return;
+                }
+
                 if (event.value <= 10 && Hrundel.getStatus() !== 'listen') {
                     if (Hrundel.getStatus() != 'sleep') {
                         hrundelMsg.innerHTML = 'Хрюндель уснул...';
@@ -111,6 +124,10 @@ require(['models/Hrundel', 'models/HrundelSvg', 'models/HrundelBar'], function (
             };
 
             svgHrundel.onclick = function() {
+                if (!Hrundel.isAlive()) {
+                    return;
+                }
+
                 if (Hrundel.getInstance().mood < 100 &&
                     Hrundel.getStatus() !== 'sleep') {
                     hrundelMsg.innerHTML = 'Хрюндель Вас слушает!';
@@ -127,6 +144,10 @@ require(['models/Hrundel', 'models/HrundelSvg', 'models/HrundelBar'], function (
                 .getBattery()
                 .then(function (battery) {
                     setInterval(function () {
+                        if (!Hrundel.isAlive()) {
+                            return;
+                        }
+
                         if (battery.charging &&
                             Hrundel.getInstance().energy < 100 &&
                             Hrundel.getStatus() !== 'sleep') {
@@ -140,7 +161,7 @@ require(['models/Hrundel', 'models/HrundelSvg', 'models/HrundelBar'], function (
     function hrundelVoice() {
         if (window.speechSynthesis) {
             setInterval(function () {
-                if (Hrundel.getStatus() === 'none') {
+                if (Hrundel.isAlive()) {
                     var msg = new SpeechSynthesisUtterance(speechText());
                     msg.volume = parseFloat(volumeInput.value);
                     msg.lang = 'ru-RU';
